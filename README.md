@@ -22,38 +22,44 @@
 
 ### 二、系统篇 ###
 
-1. 查看系统内核
-```shell
-uname -r
-```
-2. 查看内核全部信息
-```shell
-uname -a
-```
-3. 开启防火墙（仅针对CentOS 7）
-```shell
-systemctl start firewalld.service
-```
-4. 关闭防火墙（仅针对CentOS 7，用虚拟机练习推荐关闭）
-```shell
-systemctl stop firewalld.service
-```
+<table>
+	<tr>
+		<th>说明</th>
+		<th>命令</th>
+	</tr>
+	<tr>
+		<td>查看系统内核</td>
+		<td>`uname -r`</td>
+	</tr>
+	<tr>
+		<td>查看内核全部信息</td>
+		<td>`uname -a`</td>
+	</tr>
+	<tr>
+		<td>开启防火墙（仅针对CentOS 7）</td>
+		<td>`systemctl start firewalld.service`</td>
+	</tr>
+	<tr>
+		<td>关闭防火墙（仅针对CentOS 7，用虚拟机练习推荐关闭）</td>
+		<td>`systemctl stop firewalld.service`</td>
+	</tr>
+</table>
 
 - - -
 
 ### 三、网络篇 ###
 
-1. 查看IP（`Minimal`版没有`ifconfig`命令）
+* 查看IP（`Minimal`版没有`ifconfig`命令）
 ```shell
 ip addr
 ```
-2. 修改配置文件（文件名不一定叫这个）
+* 修改配置文件（文件名不一定叫这个）
 ```shell
 vi /etc/sysconfig/network-scripts/ifcfg-eth0
 ```
-3. 将ONBOOT改为yes，意思是在系统启动时是否激活网卡
-4. 将NM_CONTROLLED改为yes，如果没有添加这一行，意思是实时生效，无需重启网卡
-5. 重启网络服务
+* 将ONBOOT改为yes，意思是在系统启动时是否激活网卡
+* 将NM_CONTROLLED改为yes，如果没有添加这一行，意思是实时生效，无需重启网卡
+* 重启网络服务
 ```shell
 service network restart
 ```
@@ -64,23 +70,26 @@ service network restart
 
 **默认情况下宿主机是不能访问virtualbox内部的，所以要做如下操作**
 
-1. 查看宿主机网络连接，安装virtualbox时会默认创建一个名为VirtualBox Host-Only Network的网络连接
+* 查看宿主机网络连接，安装virtualbox时会默认创建一个名为VirtualBox Host-Only Network的网络连接
+
 ![VirtualBox Host-Only Network](resource/4.1.1.png)
-2. 查看ip段，通常是192.168.56.\*，不必修改，记住即可
+* 查看ip段，通常是192.168.56.\*，不必修改，记住即可
+
 ![查看IP](resource/4.1.2.png)
-3. 修改虚拟机网络设置，添加网卡2，连接方式选择仅主机(Host-Only)适配器，保存
+* 修改虚拟机网络设置，添加网卡2，连接方式选择仅主机(Host-Only)适配器，保存
+
 ![网卡2](resource/4.2.1.png)
-4. 在虚拟机内使用`ip addr`重新查看，记住新网卡的ip段，必须和VirtualBox Host-Only Network的IP段一致，如果一致，在宿主机访问虚拟机，查看是否能ping通
-5. 检查vsftpd软件是否安装，默认没有安装，无法远程连接该系统
+* 在虚拟机内使用`ip addr`重新查看，记住新网卡的ip段，必须和VirtualBox Host-Only Network的IP段一致，如果一致，在宿主机访问虚拟机，查看是否能ping通
+* 检查vsftpd软件是否安装，默认没有安装，无法远程连接该系统
 ```shell
 rpm -qa|grep vsftpd
 ```
-6. 安装vsftpd
+* 安装vsftpd
 ```shell
 yum install vsftpd -y
 ```
-7. 修改/etc/vsftpd/下的ftpusers和user_list文件，删除拒绝远程登录的账号
-8. 启动vsftpd服务
+* 修改/etc/vsftpd/下的ftpusers和user_list文件，删除拒绝远程登录的账号
+* 启动vsftpd服务
 ```shell
 service vsftpd start
 ```
