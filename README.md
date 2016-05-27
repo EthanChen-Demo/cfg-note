@@ -188,7 +188,7 @@ export TOMCAT_HOME=/usr/local/tomcat-8.0.35 (Tomcat解压路径)
 JAVA_OPTS='-Xms256m (初始化堆内存)
 -Xmx512m (最大堆内存)
 -XX:PermSize=256m (初始化栈内存)
--XX:MaxPermSize=512m' (最大栈内存)
+-XX:MaxPermSize=512m (最大栈内存)'
 ```
 
 - - -
@@ -320,5 +320,37 @@ use mysql
 update user set authentication_string=password('123456') where user='root';
 ```
 退出后停止数据库，将`/etc/my.cnf`里的修改删除后重新启动数据库，配置完毕
+
+- - -
+
+#### [MariaDB](https://mariadb.org/download/) ####
+
+##### 安装 #####
+MariaDB是CentOS推荐的数据库，安装只需要一行命令即可
+```shell
+yum -y install mariadb mariadb-server
+```
+设置为开机自启动
+```shell
+systemctl enable mariadb
+```
+
+##### 配置 #####
+安装完成后先启动MariaDB
+```shell
+service mariadb start
+```
+运行配置向导
+```shell
+mysql_secure_installation
+```
+* 第一个提示让输入当前密码，直接回车
+* 第二个提示是否设置密码，直接回车
+* 输入密码，回车
+* 确认密码，回车
+* 是否删除匿名用户，直接回车
+* 是否禁止远程登录，视实际情况而定
+* 是否删除test数据库，直接回车
+* 是否重新加载权限，回车，配置完毕
 
 **未完待续**
