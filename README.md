@@ -29,19 +29,19 @@
 	</tr>
 	<tr>
 		<td>查看系统内核</td>
-		<td>`uname -r`</td>
+		<td>uname -r</td>
 	</tr>
 	<tr>
 		<td>查看内核全部信息</td>
-		<td>`uname -a`</td>
+		<td>uname -a</td>
 	</tr>
 	<tr>
 		<td>开启防火墙（仅针对CentOS 7）</td>
-		<td>`systemctl start firewalld.service`</td>
+		<td>systemctl start firewalld.service</td>
 	</tr>
 	<tr>
 		<td>关闭防火墙（仅针对CentOS 7，用虚拟机练习推荐关闭）</td>
-		<td>`systemctl stop firewalld.service`</td>
+		<td>systemctl stop firewalld.service</td>
 	</tr>
 </table>
 
@@ -76,7 +76,7 @@ service network restart
 * 查看ip段，通常是192.168.56.\*，不必修改，记住即可
 
 ![查看IP](resource/4.1.2.png)
-* 修改虚拟机网络设置，添加网卡2，连接方式选择仅主机(Host-Only)适配器，保存
+* 修改虚拟机网络设置，添加网卡2，连接方式选择`仅主机(Host-Only)适配器`，保存
 
 ![网卡2](resource/4.2.1.png)
 * 在虚拟机内使用`ip addr`重新查看，记住新网卡的ip段，必须和VirtualBox Host-Only Network的IP段一致，如果一致，在宿主机访问虚拟机，查看是否能ping通
@@ -176,9 +176,26 @@ export PATH=$PATH:${SCALA_HOME}/bin
 
 - - -
 
+#### [Tomcat](http://tomcat.apache.org/) ####
+**无需安装，直接解压缩后配置环境变量既可用，但需要先安装Jdk**
+
+以Tomcat8.0.35为例修改环境变量，在末尾添加一行（配置完毕后不要忘记使用`source`令环境变量生效）
+```shell
+export TOMCAT_HOME=/usr/local/tomcat-8.0.35 (Tomcat解压路径)
+```
+配置虚拟内存，在`#!/bin/sh`下面添加
+```shell
+JAVA_OPTS='-Xms256m (初始化堆内存)
+-Xmx512m (最大堆内存)
+-XX:PermSize=256m (初始化栈内存)
+-XX:MaxPermSize=512m' (最大栈内存)
+```
+
+- - -
+
 #### [Nginx](http://nginx.org/en/download.html) ####
 ##### 安装 #####
-**需要先下载[pcre](http://www.pcre.org/)/[openssl](https://www.openssl.org/)/[zlib](http://www.zlib.net/)的源码再安装（不是安装后的，install文件夹里都有），安装包推荐放到`/usr/src/`路径下**
+**`Minimal`版没有依赖项源码，需要先下载[pcre](http://www.pcre.org/)/[openssl](https://www.openssl.org/)/[zlib](http://www.zlib.net/)的源码再安装（不是安装后的，install文件夹里都有），安装包推荐放到`/usr/src/`路径下**
 
 解压安装包后，执行`configure`文件，如果不能执行，先用`chmod`赋权，并追加参数
 ```shell
@@ -190,12 +207,9 @@ export PATH=$PATH:${SCALA_HOME}/bin
 --with-openssl=/usr/src/openssl (openssl源码路径)
 --with-zlib=/usr/src/zlib (zlib源码路径)
 ```
-成功后执行
+成功后依次执行
 ```shell
 make
-```
-成功后执行
-```shell
 make install
 ```
 启动nginx服务器
@@ -251,5 +265,60 @@ http {
     }
 }
 ```
+
+- - -
+
+#### [MySQL](http://dev.mysql.com/downloads/) ####
+**从个人角度来说，本人不推荐使用MySQL数据库，可以的话尽量使用MariaDB，个中缘由自行Google，如果一定要使用MySQL，请看如下配置**
+
+##### 安装 #####
+在CentOS 7中，系统默认安装了MariaDB，需要先进行卸载，首先使用下面命令查看已安装的MariaDB相关软件
+```shell
+rpm -qa|grep mariadb
+```
+使用以下命令卸载
+```shell
+rpm -e --nodeps mariadb-libs-5.5.41-2.el7_0.x86_64
+```
+`Minimal`版本也没有libaio，需要安装
+```shell
+yum -y install libaio
+```
+以及net-tools
+```shell
+yum -y install net-tools
+```
+Linux下的MySQL分为源码安装和rpm安装，因为源码安装需要具备所有依赖项的源码，所以强烈不推荐使用源码安装，在官网下载rpm整合包就好，这里以`mysql-5.7.12`为例，下载后解压，不需要全部安装，依次安装如下安装包即可，顺序不可颠倒
+```shell
+rpm -ivh mysql-community-common-5.7.12-1.el7.x86_64.rpm
+rpm -ivh mysql-community-libs-5.7.12-1.el7.x86_64.rpm
+rpm -ivh mysql-community-client-5.7.12-1.el7.x86_64.rpm
+rpm -ivh mysql-community-server-5.7.12-1.el7.x86_64.rpm
+```
+安装完毕，先不要启动MySQL
+
+##### 配置 #####
+修改配置文件
+```shell
+vim /etc/my.cnf
+```
+在[mysqld]下面添加一行
+```shell
+skip-grant-tables
+```
+保存后启动MySQL
+```shell
+service mysqld start
+```
+此时可用空密码直接进入MySQL
+```shell
+mysql -uroot -p
+```
+切换到mysql库并修改密码，MySQL5.7版本的密码字段是authentication_string，低版本是password
+```mysql
+use mysql
+update user set authentication_string=password('123456') where user='root';
+```
+退出后停止数据库，将`/etc/my.cnf`里的修改删除后重新启动数据库，配置完毕
 
 **未完待续**
