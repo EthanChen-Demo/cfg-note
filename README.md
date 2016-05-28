@@ -353,4 +353,29 @@ mysql_secure_installation
 * 是否删除test数据库，直接回车
 * 是否重新加载权限，回车，配置完毕
 
+- - -
+
+#### [Redis](http://redis.io/download) ####
+
+解压后先进入redis目录，以3.2.0为例
+```shell
+cd redis-2.8.17
+```
+然后make
+```shell
+make
+```
+进入src目录
+```shell
+cd src
+```
+运行redis-server启动redis服务
+```shell
+./redis-server
+```
+但是这样启动后不会返回命令行，所以在命令后加&，启动redis后返回命令行
+```shell
+./redis-server &
+```
+
 **未完待续**
