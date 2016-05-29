@@ -86,7 +86,7 @@ rpm -qa|grep vsftpd
 ```
 * 安装vsftpd
 ```shell
-yum install vsftpd -y
+yum -y install vsftpd
 ```
 * 修改/etc/vsftpd/下的ftpusers和user_list文件，删除拒绝远程登录的账号
 * 启动vsftpd服务
