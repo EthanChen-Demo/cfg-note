@@ -98,6 +98,10 @@ service vsftpd start
 
 ### 五、基本工具 ###
 
+* 更新yum
+```shell
+yum update
+```
 * 安装vim（文本编辑器，`Minimal`版默认只安装了vi，没有vim）
 ```shell
 yum -y install vim
