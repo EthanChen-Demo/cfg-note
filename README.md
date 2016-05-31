@@ -159,7 +159,7 @@ source 环境变量
 #### [Jdk](http://www.oracle.com/technetwork/java/javase/downloads/index-jsp-138363.html) ####
 **无需安装，直接解压缩后配置环境变量既可用**
 
-修改环境变量，在末尾添加以下几行（配置完毕后不要忘记使用`source`令环境变量生效）
+以jdk7为例，修改环境变量，在末尾添加以下几行（配置完毕后不要忘记使用`source`令环境变量生效）
 ```shell
 export JAVA_HOME=/usr/lib/jvm/jdk7 (jdk解压路径)
 export JRE_HOME=${JAVA_HOME}/jre
@@ -172,7 +172,7 @@ export PATH=$PATH:${JAVA_HOME}/bin
 #### [Scala](http://www.scala-lang.org/download/) ####
 **无需安装，直接解压缩后配置环境变量既可用，但需要先安装Jdk**
 
-修改环境变量，在末尾添加以下几行（配置完毕后不要忘记使用`source`令环境变量生效）
+以scala-2.11为例，修改环境变量，在末尾添加以下几行（配置完毕后不要忘记使用`source`令环境变量生效）
 ```shell
 export SCALA_HOME=/usr/lib/scala/scala-2.11 (scala类库解压路径)
 export PATH=$PATH:${SCALA_HOME}/bin
@@ -381,5 +381,184 @@ cd src
 ```shell
 ./redis-server &
 ```
+
+- - -
+
+#### [Hadoop](http://hadoop.apache.org/) ####
+**无需安装，直接解压缩后修改配置文件既可用，但需要先安装Jdk**
+
+**不配私钥只能玩单机版**
+
+以hadoop-2.7.2为例，解压后进入hadoop路径，创建4个文件夹
+```shell
+mkdir tmp
+mkdir hdfs
+mkdir hdfs/data
+mkdir hdfs/name
+```
+配置环境变量，在末尾添加以下几行（配置完毕后不要忘记使用`source`令环境变量生效）
+```shell
+export HADOOP_HOME=/root/download/hadoop-2.7.2
+export PATH=$PATH:${HADOOP_HOME}/bin
+```
+hadoop不能以IP访问，要修改主机名和host映射，主机名修改（仅针对CentOS 7）
+```shell
+hostnamectl set-hostname 主机名
+```
+修改host映射文件
+```shell
+vim /etc/hosts
+```
+修改core-site.xml，注意这里是相对路径
+```shell
+vim etc/hadoop/core-site.xml
+```
+在configuration标签中添加
+```xml
+<property>
+  <name>fs.defaultFS</name>
+  <value>hdfs://hadoop:9000</value>
+  <!-- value的含义为hdfs://主机名:端口号 -->
+</property>
+<property>
+  <name>hadoop.tmp.dir</name>
+  <value>file:/root/download/hadoop-2.7.2/tmp</value>
+  <!-- 这里要用绝对路径 -->
+</property>
+<property>
+  <name>io.file.buffer.size</name>
+  <value>131702</value>
+</property>
+```
+修改hdfs-site.xml，相对路径
+```shell
+vim etc/hadoop/hdfs-site.xml
+```
+同样在configuration标签中添加
+```xml
+<property>
+  <name>dfs.namenode.name.dir</name>
+  <value>file:/root/download/hadoop-2.7.1/hdfs/data</value>
+  <!-- 修改绝对路径 -->
+</property>
+<property>
+  <name>dfs.datanode.data.dir</name>
+  <value>file:/root/download/hadoop-2.7.1/fdfs/data</value>
+  <!-- 修改绝对路径 -->
+</property>
+<property>
+  <name>dfs.replication</name>
+  <value>2</value>
+</property>
+<property>
+  <name>dfs.namenode.secondary.http-address</name>
+  <value>hadoop:9001</value>
+  <!-- 这里别忘了修改 -->
+</property>
+<property>
+  <name>dfs.webhdfs.enabled</name>
+  <value>true</value>
+</property>
+```
+重命名模板
+```shell
+mv etc/hadoop/mapred-site.xml.template etc/hadoop/mapred-site
+```
+修改mapred-site.xml
+```shell
+vim etc/hadoop/mapred-site.xml
+```
+同样在configuration标签中添加
+```xml
+<property>
+  <name>mapreduce.framework.name</name>
+  <value>yarn</value>
+</property>
+<property>
+  <name>mapreduce.jobhistory.address</name>
+  <value>hadoop:10020</value>
+  <!-- 这里别忘了修改 -->
+</property>
+<property>
+  <name>mapreduce.jobhistory.webapp.address</name>
+  <value>hadoop:19888</value>
+  <!-- 这里别忘了修改 -->
+</property>
+```
+修改yarn-site.xml，相对路径
+```shell
+vim etc/hadoop/yarn-site.xml
+```
+同样在configuration标签中添加
+```xml
+<property>
+  <name>yarn.nodemanager.aux-services</name>
+  <value>mapreduce_shuffle</value>
+</property>
+<property>
+  <name>yarn.nodemanager.auxservices.mapreduce.shuffle.class</name>
+  <value>org.apache.hadoop.mapred.ShuffleHandler</value>
+</property>
+<property>
+  <name>yarn.resourcemanager.address</name>
+  <value>hadoop:8032</value>
+  <!-- 这里别忘了修改 -->
+</property>
+<property>
+  <name>yarn.resourcemanager.scheduler.address</name>
+  <value>hadoop:8030</value>
+  <!-- 这里别忘了修改 -->
+</property>
+<property>
+  <name>yarn.resourcemanager.resource-tracker.address</name>
+  <value>hadoop:8031</value>
+  <!-- 这里别忘了修改 -->
+</property>
+<property>
+  <name>yarn.resourcemanager.admin.address</name>
+  <value>hadoop:8033</value>
+  <!-- 这里别忘了修改 -->
+</property>
+<property>
+  <name>yarn.resourcemanager.webapp.address</name>
+  <value>hadoop:8088</value>
+  <!-- 这里别忘了修改 -->
+</property>
+<property>
+  <name>yarn.nodemanager.resource.memory-mb</name>
+  <value>768</value>
+</property>
+```
+修改hadoop-env.sh，相对路径
+```shell
+vim etc/hadoop/hadoop-env.sh
+```
+修改JAVA_HOME，这里比较操蛋，配置环境变量也没有用
+```shell
+export JAVA_HOME=/usr/lib/jvm/jdk7
+```
+修改slaves，配置从服务器，相对路径
+```shell
+vim etc/hadoop/slaves
+```
+格式为每行一个，如下，再次强调，**不配私钥只能玩单机版**
+```cnf
+hadoop
+cluster01
+cluster02
+```
+配置成功后，将hadhoop复制到各个从服务器上，并在主服务器进行初始化
+```shell
+hadoop namenode -format
+```
+启动hadoop集群
+```shell
+sh sbin/start-all.sh
+```
+停止hadoop集群
+```shell
+sh sbin/stop-all.sh
+```
+在浏览器输入`http://主服务器IP:8088`查看集群信息
 
 **未完待续**
