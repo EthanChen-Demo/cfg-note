@@ -387,7 +387,7 @@ cd src
 #### [Hadoop](http://hadoop.apache.org/) ####
 **无需安装，直接解压缩后修改配置文件既可用，但需要先安装Jdk**
 
-**不配私钥只能玩单机版**
+**不配私钥只能玩单机版，就个人学习而言，单机版已经足够**
 
 以hadoop-2.7.2为例，解压后进入hadoop路径，创建4个文件夹
 ```shell
@@ -547,7 +547,7 @@ hadoop
 cluster01
 cluster02
 ```
-配置成功后，将hadhoop复制到各个从服务器上，并在主服务器进行初始化
+配置成功后，将hadoop复制到各个从服务器上，并在主服务器进行初始化
 ```shell
 hadoop namenode -format
 ```
