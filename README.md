@@ -359,6 +359,85 @@ mysql_secure_installation
 
 - - -
 
+#### [PostgreSQL](https://www.postgresql.org/download/) ####
+
+**安装**
+
+PostgreSQL也是CentOS推荐的数据库，安装同样只需要一行命令即可
+```shell
+yum install postgresql*
+```
+初始化数据库
+```shell
+postgresql-setup initdb
+```
+设置为开机自启动
+```shell
+systemctl enable postgresql
+```
+
+**配置**
+
+先启动PostgreSQL
+```shell
+systemctl start postgresql
+```
+进入数据库
+```shell
+su - postgres
+```
+创建角色
+```postgresql
+createuser admin（用户名）
+```
+创建数据库实例
+```postgresql
+createdb -e -O admin（用户名） testdb（实例名）
+```
+进入查询分析器
+```postgresql
+psql
+```
+设置密码
+```postgresql
+\password admin;（用户名，用分号结束）
+```
+退出查询分析器
+```postgresql
+\q（不需要分号结束）
+```
+退出数据库
+```postgresql
+exit
+```
+修改监听
+```shell
+vim /var/lib/pgsql/data/postgresql.conf
+```
+将这句注释打开并修改
+```shell
+listen_addresses = '*'
+```
+修改验证方式
+```shell
+vim /var/lib/pgsql/data/pg_hba.conf
+```
+将如下内容修改或复制
+```shell
+host  all  all  127.0.0.1/32（允许哪个IP访问，如果允许全部，则写成0.0.0.0/0）  md5（md5为密码验证）
+```
+重启数据库
+```shell
+systemctl restart postgresql
+```
+使用密码登录数据库
+```shell
+psql -U admin（用户名） -d testdb（数据库） -h 127.0.0.1（登录哪个IP）
+```
+登录成功，配置完毕
+
+- - -
+
 #### [Redis](http://redis.io/download) ####
 
 解压后先进入redis目录，以3.2.0为例
